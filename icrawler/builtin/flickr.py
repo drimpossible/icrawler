@@ -124,6 +124,7 @@ class FlickrImageCrawler(Crawler):
               max_size=None,
               file_idx_offset=0,
               overwrite=False,
+              downloader_kwargs={},
               **kwargs):
         kwargs['apikey'] = self.apikey
 
@@ -140,13 +141,14 @@ class FlickrImageCrawler(Crawler):
         else:
             for sz in size_preference:
                 assert sz in default_order
-        super(FlickrImageCrawler, self).crawl(
-            feeder_kwargs=kwargs,
-            parser_kwargs=dict(
-                apikey=self.apikey, size_preference=size_preference),
-            downloader_kwargs=dict(
+        downloader_kwargs = {**dict(
                 max_num=max_num,
                 min_size=min_size,
                 max_size=max_size,
                 file_idx_offset=file_idx_offset,
-                overwrite=overwrite))
+                overwrite=overwrite), **downloader_kwargs}
+        super(FlickrImageCrawler, self).crawl(
+            feeder_kwargs=kwargs,
+            parser_kwargs=dict(
+                apikey=self.apikey, size_preference=size_preference),
+            downloader_kwargs=downloader_kwargs)

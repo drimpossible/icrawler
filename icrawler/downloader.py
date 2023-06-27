@@ -273,3 +273,56 @@ class ImageDownloader(Downloader):
                     **kwargs):
         super(ImageDownloader, self).worker_exec(
             max_num, default_ext, queue_timeout, req_timeout, **kwargs)
+
+
+class TextFileDownloader(Downloader):
+    """Downloader specified for images.
+    """
+    def download(self, task, default_ext, timeout=5, max_retry=3, overwrite=False, **kwargs):
+        pass
+    
+    def process_meta(self, task):
+        with self.lock:
+            self.fetched_num += 1
+            self.fwr.write(task['file_url']+'\n')
+
+    def start(self, file_idx_offset=0, *args, **kwargs):
+        self.clear_status()
+        self.set_file_idx_offset(file_idx_offset)
+        self.init_workers(*args, **kwargs)
+        for worker in self.workers:
+            worker.start()
+            self.logger.debug('thread %s started', worker.name)
+        self.fwr = open(kwargs['query']+'_'+kwargs['engine']+'.txt','w')
+    
+    def worker_exec(self, max_num, default_ext='jpg', queue_timeout=5, req_timeout=5, **kwargs):
+        self.max_num = max_num
+        
+        while True:
+            if self.signal.get('reach_max_num'):
+                self.logger.info('downloaded images reach max num, thread %s'
+                                 ' is ready to exit',
+                                 current_thread().name)
+                break
+            try:
+                task = self.in_queue.get(timeout=queue_timeout)
+            except queue.Empty:
+                if self.signal.get('parser_exited'):
+                    self.logger.info('no more download task for thread %s',
+                                     current_thread().name)
+                    break
+                else:
+                    self.logger.info('%s is waiting for new download tasks',
+                                     current_thread().name)
+            except:
+                self.logger.error('exception in thread %s',
+                                  current_thread().name)
+            else:
+                self.process_meta(task)
+                self.in_queue.task_done()
+                
+        self.logger.info('thread {} exit'.format(current_thread().name))
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.fwr.close()
+        self.logger.info('all downloader threads exited')

@@ -168,7 +168,7 @@ class Crawler(object):
         """
         self.signal.reset()
         self.logger.info('start crawling...')
-
+        print(feeder_kwargs, parser_kwargs, downloader_kwargs)
         feeder_kwargs = {} if feeder_kwargs is None else feeder_kwargs
         parser_kwargs = {} if parser_kwargs is None else parser_kwargs
         downloader_kwargs = {} if downloader_kwargs is None else downloader_kwargs

@@ -115,12 +115,12 @@ class BingFeeder(Feeder):
 
 
 class BingParser(Parser):
-
     def parse(self, response):
         soup = BeautifulSoup(
             response.content.decode('utf-8', 'ignore'), 'lxml')
         image_divs = soup.find_all('div', class_='imgpt')
         pattern = re.compile(r'murl\":\"(.*?)\.jpg')
+        pattern2 = re.compile(r'murl\":\"(.*?)\.jpeg')
         for div in image_divs:
             try:
                 href_str = html.unescape(div.a['m'])
@@ -131,6 +131,13 @@ class BingParser(Parser):
                 name = (match.group(1)
                         if six.PY3 else match.group(1).encode('utf-8'))
                 img_url = '{}.jpg'.format(name)
+                yield dict(file_url=img_url)
+            
+            match = pattern2.search(href_str)
+            if match:
+                name = (match.group(1)
+                        if six.PY3 else match.group(1).encode('utf-8'))
+                img_url = '{}.jpeg'.format(name)
                 yield dict(file_url=img_url)
 
 
@@ -153,7 +160,8 @@ class BingImageCrawler(Crawler):
               min_size=None,
               max_size=None,
               file_idx_offset=0,
-              overwrite=False):
+              overwrite=False,
+              downloader_kwargs={}):
         if offset + max_num > 1000:
             if offset > 1000:
                 self.logger.error('Offset cannot exceed 1000, otherwise you '
@@ -167,11 +175,12 @@ class BingImageCrawler(Crawler):
                                     1000 - offset)
         feeder_kwargs = dict(
             keyword=keyword, offset=offset, max_num=max_num, filters=filters)
-        downloader_kwargs = dict(
-            max_num=max_num,
-            min_size=min_size,
-            max_size=max_size,
-            file_idx_offset=file_idx_offset,
-            overwrite=overwrite)
+        downloader_kwargs = {**dict(
+                max_num=max_num,
+                min_size=min_size,
+                max_size=max_size,
+                file_idx_offset=file_idx_offset,
+                overwrite=overwrite), **downloader_kwargs}
+        
         super(BingImageCrawler, self).crawl(
             feeder_kwargs=feeder_kwargs, downloader_kwargs=downloader_kwargs)

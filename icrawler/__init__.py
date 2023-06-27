@@ -1,6 +1,6 @@
 from .feeder import Feeder, SimpleSEFeeder, UrlListFeeder
 from .parser import Parser
-from .downloader import Downloader, ImageDownloader
+from .downloader import Downloader, ImageDownloader, TextFileDownloader
 from .crawler import Crawler
 
 from .version import __version__
