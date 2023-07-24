@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from threading import current_thread
-
+import os
 from PIL import Image
 from six import BytesIO
 from six.moves import queue
@@ -293,8 +293,9 @@ class TextFileDownloader(Downloader):
         for worker in self.workers:
             worker.start()
             self.logger.debug('thread %s started', worker.name)
-        os.makedirs(kwargs['savepath']+'/'+kwargs['engine']+'/'+kwargs['query']+'/images.txt', exist_ok=True)
-        self.fwr = open(kwargs['savepath']+'/'+kwargs['engine']+'/'+kwargs['query']+'/images.txt','w')
+        foldername = kwargs['query'].replace(' ','_')
+        os.makedirs(kwargs['savepath']+'/'+kwargs['engine']+'/'+foldername+'/images.txt', exist_ok=True)
+        self.fwr = open(kwargs['savepath']+'/'+kwargs['engine']+'/'+foldername+'/images.txt','w')
     
     def worker_exec(self, max_num, default_ext='jpg', queue_timeout=5, req_timeout=5, **kwargs):
         self.max_num = max_num
