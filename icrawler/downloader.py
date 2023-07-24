@@ -294,7 +294,7 @@ class TextFileDownloader(Downloader):
             worker.start()
             self.logger.debug('thread %s started', worker.name)
         foldername = kwargs['query'].replace(' ','_')
-        os.makedirs(kwargs['savepath']+'/'+kwargs['engine']+'/'+foldername+'/images.txt', exist_ok=True)
+        os.makedirs(kwargs['savepath']+'/'+kwargs['engine']+'/'+foldername+'/', exist_ok=True)
         self.fwr = open(kwargs['savepath']+'/'+kwargs['engine']+'/'+foldername+'/images.txt','w')
     
     def worker_exec(self, max_num, default_ext='jpg', queue_timeout=5, req_timeout=5, **kwargs):
