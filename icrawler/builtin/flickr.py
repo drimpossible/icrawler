@@ -12,11 +12,11 @@ from icrawler import Crawler, Feeder, Parser, ImageDownloader
 
 class FlickrFeeder(Feeder):
 
-    def feed(self, apikey, max_num=500, **kwargs):
-        if max_num > 500:
-            max_num = 500
+    def feed(self, apikey, max_num=250, **kwargs):
+        if max_num > 250:
+            max_num = 250
             self.logger.warning(
-                'max_num exceeds 500, set it to 500 automatically.')
+                'max_num exceeds 200, set it to 200 automatically.')
         base_url = 'https://api.flickr.com/services/rest/?'
         params = {
             'method': 'flickr.photos.search',
@@ -48,7 +48,7 @@ class FlickrFeeder(Feeder):
         url = base_url + urlencode(params)
         per_page = params.get('per_page', 100)
         page = params.get('page', 1)
-        page_max = int(math.ceil(500.0 / per_page))
+        page_max = int(math.ceil(250.0 / per_page))
         for i in range(page, page + page_max):
             if self.signal.get('reach_max_num'):
                 break
@@ -118,7 +118,7 @@ class FlickrImageCrawler(Crawler):
             feeder_cls, parser_cls, downloader_cls, *args, **kwargs)
 
     def crawl(self,
-              max_num=100,
+              max_num=200,
               size_preference=None,
               min_size=None,
               max_size=None,
