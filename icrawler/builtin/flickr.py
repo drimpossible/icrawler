@@ -46,7 +46,7 @@ class FlickrFeeder(Feeder):
             else:
                 self.logger.error('Unrecognized search param: %s', key)
         url = base_url + urlencode(params)
-        per_page = params.get('per_page', 50)
+        per_page = params.get('per_page', 100)
         page = params.get('page', 1)
         page_max = int(math.ceil(500.0 / per_page))
         for i in range(page, page + page_max):
@@ -118,7 +118,7 @@ class FlickrImageCrawler(Crawler):
             feeder_cls, parser_cls, downloader_cls, *args, **kwargs)
 
     def crawl(self,
-              max_num=1000,
+              max_num=100,
               size_preference=None,
               min_size=None,
               max_size=None,
