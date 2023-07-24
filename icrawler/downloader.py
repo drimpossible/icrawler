@@ -296,6 +296,7 @@ class TextFileDownloader(Downloader):
         foldername = kwargs['query'].replace(' ','_')
         os.makedirs(kwargs['savepath']+'/'+kwargs['engine']+'/'+foldername+'/', exist_ok=True)
         self.fwr = open(kwargs['savepath']+'/'+kwargs['engine']+'/'+foldername+'/images.txt','w')
+        self.fwr.write('url\n')
     
     def worker_exec(self, max_num, default_ext='jpg', queue_timeout=5, req_timeout=5, **kwargs):
         self.max_num = max_num
