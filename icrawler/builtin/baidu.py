@@ -117,6 +117,7 @@ class BaiduParser(Parser):
         except:
             self.logger.error('Fail to parse the response in json format')
             return
+        #print(content)
         for item in content['data']:
             if 'objURL' in item:
                 img_url = self._decode_url(item['objURL'])
